@@ -1,0 +1,133 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/FrameLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context=".MainActivity" >
+
+    <ImageView
+        android:id="@+id/background1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scaleType="fitXY"
+        android:background="@drawable/welcome2" />
+
+    <ImageView
+        android:id="@+id/background2"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:visibility="visible"
+        android:layout_height="match_parent"
+         />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/heart"
+            android:text="喜" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="歌曲名" />
+        <ImageButton
+            android:id="@+id/dislike"
+            android:background="@drawable/heart_broken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="厌" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="意思意思" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/playOrPuse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/play" />
+
+        <ImageButton
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/next" />
+
+        <ImageButton
+            android:id="@+id/isLoop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/noloop" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="500"
+		android:progress="0"
+         />
+    
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/musicInfo"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="170dip"
+        android:background="@drawable/shape"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:alpha="128"
+        android:visibility="invisible"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="歌曲信息啊" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/musicLrc"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/shape"
+        android:alpha="128"
+        android:layout_marginTop="170dip"
+        android:layout_marginLeft="20dip"
+        android:layout_marginRight="20dip"
+        android:orientation="vertical" >
+                <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="歌词啊" />
+    </LinearLayout>
+
+</FrameLayout>
