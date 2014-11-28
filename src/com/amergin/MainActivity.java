@@ -509,7 +509,15 @@ public class MainActivity extends Activity {
 					@Override
 					public void onCompletion(MediaPlayer arg0) {
 						// TODO Auto-generated method stub
-						PlayNextMusic();
+						if(isLoop)
+						{
+							mmp.start();
+						}
+						else
+						{
+							PlayNextMusic();
+						}
+						
 					}
 				});
 				mmp.start();
@@ -571,6 +579,7 @@ public class MainActivity extends Activity {
                        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
                        mExitTime = System.currentTimeMillis();
 
+                       
                } else {
             	   System.exit(0);
                }
