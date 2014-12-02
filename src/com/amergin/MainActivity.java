@@ -93,6 +93,7 @@ public class MainActivity extends Activity {
 	private SeekBar seekBar;
 	private boolean SeekBarChagnging=false;
 	private boolean nextBtnReady=true;  //泪奔....为了应对瞬间按下n次下一曲...
+	private boolean isDownloading=false;
 	//------这么多变量---- = =
 //	LinearLayout music_lrc;
 	LinearLayout music_info;
@@ -153,7 +154,7 @@ public class MainActivity extends Activity {
 	    mPushView = (PushSlider)findViewById(R.id.push_view);
 	    int screenWidth = getWindowManager().getDefaultDisplay().getWidth();
 	    //mPushView.setPageWidth(PushSlider.SLIDER_PAGE_LEFT, screenWidth/2);
-	    mPushView.setPageWidth(PushSlider.SLIDER_PAGE_LEFT, 3*screenWidth/4+1);
+	    mPushView.setPageWidth(PushSlider.SLIDER_PAGE_LEFT, screenWidth/2);
 	    mPushView.setPageWidth(PushSlider.SLIDER_PAGE_RIGHT, screenWidth);
 	    mPushView.setOnPageChangedListener(new myOnPageChangedListener());
 	}
@@ -192,15 +193,23 @@ public class MainActivity extends Activity {
                  if(temp_p<seekBar.getMax())
                  {
                 	 seekBar.setProgress(temp_p);
-                	 Message msg=new Message();
-                	 msg.what=2;
-                	 msg.arg1=temp_p;
-                	 handlerForBackground.sendMessage(msg); 
+ 					if(current_view_id!=1)
+ 					{
+						Log.i("LrcDown","收到消息但是不换词,"+current_view_id);
+					}
+ 					else
+					{
+						 Message msg=new Message();
+                	     msg.what=2;
+                	     msg.arg1=temp_p;
+                	     handlerForBackground.sendMessage(msg); 
+					}
+
                  }
                 	 
              }    
          };   
-         SeekBarmTimer.schedule(SeekBarmTimerTask, 0, 10);   
+         SeekBarmTimer.schedule(SeekBarmTimerTask, 0, 100);
 	}
 
 	private void BackgroundIniti() {
@@ -260,40 +269,29 @@ public class MainActivity extends Activity {
 							msg.obj=bitmap;
 							handlerForBackground.sendMessage(msg);
 							
-							//这里有必要睡眠么....如果发消息的是多出比如手动和自动，睡眠应该会有必要了吧
-							try {
-								Thread.sleep(8000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
 						}
 			   	}).start();
 					break;
 				case 2:
-					if(current_view_id!=1)return;
-					if(NoChangeBackground)return;
 					int p=msg.arg1;
 					if(p>100)p+=300;  //提前300毫秒提示歌词时间进度
 				//	if(p>)
-					Log.i("LLRC","改更新歌词了:"+p);
+					//Log.i("LLRC","改更新歌词了:"+p);
 					LrcSDM.refreshUI(p);
 					break;
 				case 3:
-					 Log.i("TTT","收到消息换词");
+					Log.i("LrcDown","收到消息换词");
 					 Song s=(Song)msg.obj;
 					LrcSDM.reloadLrc(s.getLrcLocalPath());
 					 try{
-						 Log.i("TTT","换歌名"+s.getMusicName());
 						  title.setText(s.getMusicName());
-						  Log.i("TTT","换歌手"+s.getArtist());
 						  artist.setText(s.getArtist());
-						  
 					 }
 					catch(Exception e)
 					{
 						Log.i("TTT","换了"+e.getMessage());
 					}
+					 Log.i("LrcDown","幻刺完毕");
 					break;
 				case 4:
 					//重置
@@ -319,7 +317,7 @@ public class MainActivity extends Activity {
     	    	TimeToChangeBackground();
     	    } 
     	}; 
-    	timer.schedule(task,0, 8000);
+    	timer.schedule(task,20000, 20000);
 	}
     
 	//向handler发消息要求换图，有些细节需要调整
@@ -497,7 +495,6 @@ public class MainActivity extends Activity {
     {
     	if(!nextBtnReady)return;
     	nextBtnReady=false;
-    //	NoChangeBackground=true;
     	TimeToChangeBackground();
         PauseMusic();
         NextMusicIniti();
@@ -513,47 +510,41 @@ public class MainActivity extends Activity {
     }
     void CloudPlay()
     {
-    	 Log.i("TTT","进入函数CloudPlay");
+    	
+    	 isDownloading=true;
     	//设置模式...
 		 mmp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		 try {
+			 Log.i("LrcDown","开始获取歌曲基本信息....");
 			 Song song=JsonTool.getTodaySong();
-			 String nextPath=getNextCloudMusicpath();
-			 nextPath=song.getMusicUrl();
-			 Log.i("TTT","歌词链接："+song.getLyricUrl()+";歌手："+song.getArtist()+";歌名："+song.getMusicName());
-			 Log.i("TTT","mp3链接："+song.getMusicUrl());
-			 
+			 Log.i("LrcDown","基本信息获取完毕");
+			 String nextPath=song.getMusicUrl();
 			 LyricDownloadManager test=new LyricDownloadManager();
-			 Log.i("LrcDown","start");
+			 Log.i("LrcDown","开始下载歌词");
 			 String lrcPath=test.downLyricContent(song.getLyricUrl(), song.getArtist(), song.getMusicName());
-			 Log.i("LrcDown","done");
+			 Log.i("LrcDown","歌词已存到本地");
 			 song.setLrcLocalPath(lrcPath);
+			 
 			 //通知listView换词
-			 Log.i("TTT","开始发消息通知换词");
+			 mmp.setDataSource(nextPath);
+
+			 Log.i("LrcDown","prepareAsync开始执行");
+			 mmp.prepare();
+			 Log.i("LrcDown","prepareAsync执行完毕开始start");
+			 mmp.start();
+			 isPlay=true;
 			 Message msg=new Message();
 			 msg.obj=song;
 			 msg.what=3;
 			 handlerForBackground.sendMessage(msg);
-			 mmp.setDataSource(nextPath);
-			 Log.i("TTT","链接："+nextPath);
-			 mmp.prepare();
-			 Log.i("JKL","歌曲信息1");
+			 isDownloading=false;
+			 Log.i("LrcDown","发送通知换个词");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.i("test","错误"+e.getMessage());
 			e.printStackTrace();
 		}
-
-		 mmp.setOnPreparedListener(new OnPreparedListener(){
-			@Override
-			public void onPrepared(MediaPlayer arg0) {
-				// TODO Auto-generated method stub
-				//Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-				 Log.i("TTT","准备完毕");
-				arg0.start();
-				isPlay=true;
-			}
-		 });
+		
     }
     
     void LocalPlay()
@@ -581,6 +572,7 @@ public class MainActivity extends Activity {
 			mmp.start();
 			return;
 		}
+    	 Log.i("LrcDown","开始进行下一首歌曲的联网获取....");
 		musicThread=new Thread(new Runnable(){
 			@Override
 			public void run() {
@@ -588,6 +580,8 @@ public class MainActivity extends Activity {
 					//发消息提示说没网放不了歌曲....
 					return;
 				}
+				if(isDownloading)return;
+					
 					if(mmp!=null){mmp.release();mmp.reset();}
 					mmp=null;
 					mmp=new MediaPlayer();
@@ -597,7 +591,7 @@ public class MainActivity extends Activity {
 					@Override
 					public void onCompletion(MediaPlayer arg0) {
 						// TODO Auto-generated method stub
-						 Log.i("TTT","播放完毕换下一个");
+						 Log.i("LrcDown","播放完毕换下一个");
 							if(!(app.isNetworkConnected()))
 							{
 								//如果网络不通，默认自动换成单曲循环
@@ -691,7 +685,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
     //------------工具函数-----------
