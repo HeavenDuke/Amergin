@@ -39,7 +39,8 @@ public class FileNetManager {
           String _filePath = path.substring(0, end);
           File filePath = new File(_filePath);
           File[] c_files=filePath.listFiles();
-          if(c_files.length==0)return null;
+          if(c_files==null)
+        	  return null;
           return getLoacalBitmap(c_files[0].getAbsolutePath());
         	
 	  }
@@ -170,7 +171,20 @@ public class FileNetManager {
  		return "";
  	}
  	
- 	
+	//其他--------------
+	//将文件名分割成名字和扩展名两部分,返回值是newString[]{"name","ext"};
+	public static String[] getFileExtName(String str)
+	{
+		if(str.contains("."))
+		{
+			int _in=str.lastIndexOf(".");
+			return new String[]{str.substring(0,_in),str.substring(_in+1,str.length())};
+		}
+		else
+		{
+			return new String[]{str,""};
+		}
+	}
  	
  	//给网页地址,返回页面html代码
  	public static String getContentFromUrl(String urlString,String Encoding)
@@ -180,6 +194,7 @@ public class FileNetManager {
 	//给一个URL链接,返回一个输入流
 	public static InputStream getInputStreamFromUrl(String urlString)
 	{
+		Log.i("FILE","getInputStreamFromUrl进入");
 		URL url=null;
 		HttpURLConnection urlConn=null;
 		try {
@@ -188,6 +203,7 @@ public class FileNetManager {
 			return urlConn.getInputStream();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			Log.i("FILE","从URL获取流失败"+e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
@@ -261,5 +277,76 @@ public class FileNetManager {
 	        }  
 	  }
 	
-    
+	//处理流-------------------------
+		//将输入流转成文件,放入某路径,返回0成功;-1文件创建失败,-2写入失败
+		public static int inputStream2File(InputStream input,String path,String filename)
+		{
+			Log.i("FILE","entenr");
+			File ff=new File(path);
+			if(!ff.exists())
+			{
+				if(!ff.isDirectory())
+				{
+					ff.mkdir();
+				}
+			}
+			if(path!="")path+="/";
+			File file=new File(path+filename);
+			int temp=1;
+			while(file.exists())
+			{
+				if(!file.isFile())
+					break;
+				//若文件存在,那就改名(1)
+				String [] tempName=getFileExtName(filename);
+				file=new File(path+tempName[0]+"("+temp+")."+tempName[1]);
+				++temp;
+			}
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				Log.i("FILE","创建失败"+e.getMessage());
+				return -1;
+			}
+			FileOutputStream output=null;
+			try {
+				output=new FileOutputStream(file);
+//				byte[] buffer=new byte[4*1024];//这样,呃,好么,不好!显然不好!下的图片坏掉了,
+				byte[] buffer=new byte[1];  //没有到根据链接获取文件大小的方法,要是有就不用这么尴尬了....速度慢在频繁读写
+				while((input.read(buffer)) != -1)
+					output.write(buffer);
+				output.flush();
+				input.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return -2;
+			}
+			finally{
+				try {
+					output.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return 0;
+		}
+
+	 
+	 //从网络端下载并保存成文本文件
+     public static int saveLrcFromUrltoPath(String url,String DirectoryPath,String filename)
+    {
+    	 try{
+    		 Log.i("FILE","saveLrcFromUrltoPath进入");
+    		 return FileNetManager.inputStream2File(FileNetManager.getInputStreamFromUrl(url), DirectoryPath, filename);
+    	 }
+    	catch(Exception ee)
+    	{
+    		Log.i("FILE","错误码"+ee.getMessage());
+    		return 0;
+    	}
+    }
 }

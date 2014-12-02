@@ -1,10 +1,14 @@
 package com.amergin;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 public class JsonTool {
 	//ak值是动态的咩...
@@ -15,7 +19,9 @@ public class JsonTool {
 	
 	//返回值第一个是天气，第二个是温度
 	public static List<String> getWeather(){
-		String jsonString=FileNetManager.getContentFromUrl(url, null);
+		String jsonString=FileNetManager.getContentFromUrl(url, "GB2312");
+		
+		
 		String str1="";
 		List<String> list=new ArrayList<String>();
 		try {
@@ -53,20 +59,71 @@ public class JsonTool {
 	 * "artist":"\u8150\u8349\u4e3a\u8424"}
 	 * 
 	 */
-	
+	public static String changeCharset(String str, String newCharset){
+        if(str != null) {
+            //用默认字符编码解码字符串。与系统相关，中文windows默认为GB2312
+            byte[] bs = str.getBytes();
+            try {
+				return new String(bs, newCharset);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}    //用新的字符编码生成字符串
+        }
+        return null;
+    }
 	public static Song getTodaySong()
 	{
 		Song song=null;
-		String jsonString=FileNetManager.getContentFromUrl(MyApplication.musicFetchUrlStirng, null);
+		String jsonString=FileNetManager.getContentFromUrl(MyApplication.musicFetchUrlStirng, "UTF-8");
 		List<String> list=new ArrayList<String>();
 		try {
 			//获取Json对象
 			JSONObject jsonObj=new JSONObject(jsonString);
-			song=new Song(jsonObj.getString("id"),jsonObj.getString("name"),jsonObj.getString("album"),jsonObj.getString("artist"));
+			song=new Song(jsonObj.getString("id"),jsonObj.getString("name"),jsonObj.getString("album"),jsonObj.getString("artist"),jsonObj.getString("lyric"));
+			Log.i("TTT",song.getLyricUrl());
+			
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return song;
 	}
+	
+	 public static String getEncoding(String str) {    
+         String encode = "GB2312";    
+        try {    
+            if (str.equals(new String(str.getBytes(encode), encode))) {    
+                 String s = encode;    
+                return s;    
+             }    
+         } catch (Exception exception) {    
+         }    
+         encode = "ISO-8859-1";    
+        try {    
+            if (str.equals(new String(str.getBytes(encode), encode))) {    
+                 String s1 = encode;    
+                return s1;    
+             }    
+         } catch (Exception exception1) {    
+         }    
+         encode = "UTF-8";    
+        try {    
+            if (str.equals(new String(str.getBytes(encode), encode))) {    
+                 String s2 = encode;    
+                return s2;    
+             }    
+         } catch (Exception exception2) {    
+         }    
+         encode = "GBK";    
+        try {    
+            if (str.equals(new String(str.getBytes(encode), encode))) {    
+                 String s3 = encode;    
+                return s3;    
+             }    
+         } catch (Exception exception3) {    
+         }    
+        return "";    
+     }    
 	
 }

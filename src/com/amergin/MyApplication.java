@@ -20,13 +20,17 @@ public class MyApplication extends Application {
 	private int current_weather;//当前天气
 	private boolean indoor=false; 
 	private double temperature=0; //温度
-	public static  boolean DEBUG=false;
+	public static  boolean DEBUG=true;
 	public static String backgroundUrlStirng="http://amergin.sinaapp.com/GetPicture.php";
 	public static String musicFetchUrlStirng="http://amergin.sinaapp.com/GetMusic.php";
 	//public static String songFetchUrlString="http://amergin.sinaapp.com/GetMusic.php";
-	
+	//public static String musicFetchUrlStirng="http://api.map.baidu.com/telematics/v3/weather?location=%E5%8C%97%E4%BA%AC&output=json&ak=F82d383bd0e4f7e97267f80265af60ec";
 	private String lbs_app_id="F82d383bd0e4f7e97267f80265af60ec";//
-	public  String SDPATH = Environment.getExternalStorageDirectory() + "/";
+	public static  String SDPATH = Environment.getExternalStorageDirectory() + "/";
+	public static String getLrcLocalDirectoryPath()
+	{
+		return SDPATH+"Amergin/Cache/lrc";
+	}
 	public String getLbs_app_id() {
 		return lbs_app_id;
 	}

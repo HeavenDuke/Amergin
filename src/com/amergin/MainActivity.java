@@ -12,6 +12,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
+import Lrc.LyricDownloadManager;
+import Lrc.SlidingDrawerManager;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -42,6 +44,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -84,7 +87,6 @@ public class MainActivity extends Activity {
 	private Bitmap lastBitmap=null;
 	private Bitmap currentBitmap=null;
 	private boolean isPlay=false;
-	private MyQueue<String> Musicqueue = new MyQueue<String>();  //存储音乐的队列
 	private MediaPlayer mmp=null;
 	Thread musicThread=null;
 	private boolean isLoop=false;
@@ -92,12 +94,14 @@ public class MainActivity extends Activity {
 	private boolean SeekBarChagnging=false;
 	private boolean nextBtnReady=true;  //泪奔....为了应对瞬间按下n次下一曲...
 	//------这么多变量---- = =
-	LinearLayout music_lrc;
+//	LinearLayout music_lrc;
 	LinearLayout music_info;
-	
-	
+	SlidingDrawerManager LrcSDM;
+	ListView LrcView;
+	TextView title;
+	TextView artist;
 	//---测试用类
-	Player test_player;
+	int current_view_id=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,12 +167,12 @@ public class MainActivity extends Activity {
     {
     	if(music_info.getVisibility()==View.INVISIBLE)
     	{
-    		music_lrc.setVisibility(View.INVISIBLE);
+ //   		music_lrc.setVisibility(View.INVISIBLE);
     		music_info.setVisibility(View.VISIBLE);
     	}
     	else
     	{
-    		music_lrc.setVisibility(View.VISIBLE);
+  //  		music_lrc.setVisibility(View.VISIBLE);
     		music_info.setVisibility(View.INVISIBLE);
     	}
     }
@@ -181,12 +185,19 @@ public class MainActivity extends Activity {
     	TimerTask SeekBarmTimerTask = new TimerTask() {    
              @Override    
              public void run() {     
-                 if(SeekBarChagnging||!isPlay||mmp==null){
+                 if(SeekBarChagnging||mmp==null||!mmp.isPlaying()){
                      return;
                  }
                  int temp_p=mmp.getCurrentPosition();
                  if(temp_p<seekBar.getMax())
+                 {
                 	 seekBar.setProgress(temp_p);
+                	 Message msg=new Message();
+                	 msg.what=2;
+                	 msg.arg1=temp_p;
+                	 handlerForBackground.sendMessage(msg); 
+                 }
+                	 
              }    
          };   
          SeekBarmTimer.schedule(SeekBarmTimerTask, 0, 10);   
@@ -203,13 +214,14 @@ public class MainActivity extends Activity {
 				switch(msg.what)
 				{
 				case 0:
-					Log.i("KKK","换图片");
+				//	Log.i("KKK","换图片");
 					Toast.makeText(MainActivity.this,"该换了", Toast.LENGTH_SHORT).show();
+					if(current_view_id!=1)return;
 					    currentBitmap=(Bitmap)msg.obj;
 						imageFadeChange();
 					break;
 				case 1:
-					Log.i("KKK","该换图片了");
+				//	Log.i("KKK","该换图片了");
 					
 			   		new Thread(new Runnable(){
 						@Override
@@ -258,6 +270,43 @@ public class MainActivity extends Activity {
 						}
 			   	}).start();
 					break;
+				case 2:
+					if(current_view_id!=1)return;
+					if(NoChangeBackground)return;
+					int p=msg.arg1;
+					if(p>100)p+=300;  //提前300毫秒提示歌词时间进度
+				//	if(p>)
+					Log.i("LLRC","改更新歌词了:"+p);
+					LrcSDM.refreshUI(p);
+					break;
+				case 3:
+					 Log.i("TTT","收到消息换词");
+					 Song s=(Song)msg.obj;
+					LrcSDM.reloadLrc(s.getLrcLocalPath());
+					 try{
+						 Log.i("TTT","换歌名"+s.getMusicName());
+						  title.setText(s.getMusicName());
+						  Log.i("TTT","换歌手"+s.getArtist());
+						  artist.setText(s.getArtist());
+						  
+					 }
+					catch(Exception e)
+					{
+						Log.i("TTT","换了"+e.getMessage());
+					}
+					break;
+				case 4:
+					//重置
+				//	LrcSDM.toTop();
+					//貌似没用上
+					//LrcSDM.toTop();
+					break;	
+				case 5:
+					//让单曲循环的按钮变为激活状态
+					
+					//貌似没用上
+					isLoop_rbtn.setBackgroundResource(R.drawable.loop);
+					break;
 				}
 				super.handleMessage(msg);
 			}
@@ -289,8 +338,14 @@ public class MainActivity extends Activity {
     	//background1是在background2的底部，思路：先将底边的图片换掉，然后上层的图片渐渐透明，完事儿之后上层设为同样的图片并且回归不透明
     	//实践表明在这里不可行，泪奔啊啊啊
     	if(lastBitmap!=null)
-    	background2.setImageBitmap(lastBitmap); //前后一致
-    	background2.setVisibility(View.VISIBLE);
+    	{
+    		background2.setImageBitmap(lastBitmap); //前后一致
+    		if(background2.getVisibility()==View.INVISIBLE)
+    		{
+    			background2.setVisibility(View.VISIBLE);
+    		}
+    			  
+    	}
     	background1.setImageBitmap(currentBitmap);
     	Bitmap temp=lastBitmap.copy(Bitmap.Config.ARGB_8888, true);
     	lastBitmap=currentBitmap;
@@ -299,7 +354,8 @@ public class MainActivity extends Activity {
          alphaAnimation.setAnimationListener(new AnimationListener(){
 			@Override
 			public void onAnimationEnd(Animation arg0) {
-				background2.setVisibility(View.INVISIBLE);
+				//if(current_view_id==1)
+					background2.setVisibility(View.INVISIBLE);
 				NoChangeBackground=false;
 			}
 			@Override
@@ -314,6 +370,8 @@ public class MainActivity extends Activity {
 	void findViews()
 	{
           playOrPause_btn =(ImageButton)findViewById(R.id.playOrPuse);
+          title =(TextView)findViewById(R.id.title);
+          artist =(TextView)findViewById(R.id.artist);
           next_btn =(ImageButton)findViewById(R.id.next);
           isLoop_rbtn =(ImageButton)findViewById(R.id.isLoop);
           dislike_rbtn =(ImageButton)findViewById(R.id.dislike);
@@ -321,23 +379,26 @@ public class MainActivity extends Activity {
           background1=(ImageView) findViewById(R.id.background1);
           background2=(ImageView) findViewById(R.id.background2);
           seekBar=(SeekBar) findViewById(R.id.seekBar1);
-          music_lrc=(LinearLayout) findViewById(R.id.musicLrc);
+  //        music_lrc=(LinearLayout) findViewById(R.id.musicLrc);
           music_info=(LinearLayout) findViewById(R.id.musicInfo);
+          LrcView=(ListView) findViewById(R.id.lyricshow);
+          LrcSDM=new SlidingDrawerManager(this,LrcView);
+          //LrcView.set
           
    }
+	
     //绑定事件
 	void ListenerBind()
    {
-         btnListener blst= new btnListener();
+          btnListener blst= new btnListener();
           playOrPause_btn .setOnClickListener(blst);
           next_btn .setOnClickListener(blst);
           isLoop_rbtn .setOnClickListener(blst);
           seekBar.setOnSeekBarChangeListener(new SeekBarListener());
-          music_lrc .setOnClickListener(blst);
+      //    music_lrc .setOnClickListener(blst);
           music_info .setOnClickListener(blst);
           like_rbtn.setOnClickListener(blst);
           dislike_rbtn.setOnClickListener(blst);
-          
           //music_lrc.setOnDragListener(new dragLayoutListener());
    }
    //按钮事件监听类（ ）
@@ -382,7 +443,7 @@ public class MainActivity extends Activity {
                      }
                      break ;
                 case R.id.musicInfo:
-                case R.id.musicLrc:
+   //             case R.id.musicLrc:
                 	changeMusicInfo();
                 	break;
                 case R.id.like:
@@ -425,13 +486,18 @@ public class MainActivity extends Activity {
     void SetMusicProcess(int p)
     {
     	if(mmp!=null)
+    	{
     		mmp.seekTo(p);
+    		LrcSDM.refreshUI(p);
+    	}
+    	
     }
     
     void PlayNextMusic()
     {
     	if(!nextBtnReady)return;
     	nextBtnReady=false;
+    //	NoChangeBackground=true;
     	TimeToChangeBackground();
         PauseMusic();
         NextMusicIniti();
@@ -447,11 +513,31 @@ public class MainActivity extends Activity {
     }
     void CloudPlay()
     {
+    	 Log.i("TTT","进入函数CloudPlay");
     	//设置模式...
 		 mmp.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		 try {
-			 mmp.setDataSource(getNextCloudMusicpath());
+			 Song song=JsonTool.getTodaySong();
+			 String nextPath=getNextCloudMusicpath();
+			 nextPath=song.getMusicUrl();
+			 Log.i("TTT","歌词链接："+song.getLyricUrl()+";歌手："+song.getArtist()+";歌名："+song.getMusicName());
+			 Log.i("TTT","mp3链接："+song.getMusicUrl());
+			 
+			 LyricDownloadManager test=new LyricDownloadManager();
+			 Log.i("LrcDown","start");
+			 String lrcPath=test.downLyricContent(song.getLyricUrl(), song.getArtist(), song.getMusicName());
+			 Log.i("LrcDown","done");
+			 song.setLrcLocalPath(lrcPath);
+			 //通知listView换词
+			 Log.i("TTT","开始发消息通知换词");
+			 Message msg=new Message();
+			 msg.obj=song;
+			 msg.what=3;
+			 handlerForBackground.sendMessage(msg);
+			 mmp.setDataSource(nextPath);
+			 Log.i("TTT","链接："+nextPath);
 			 mmp.prepare();
+			 Log.i("JKL","歌曲信息1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Log.i("test","错误"+e.getMessage());
@@ -463,7 +549,9 @@ public class MainActivity extends Activity {
 			public void onPrepared(MediaPlayer arg0) {
 				// TODO Auto-generated method stub
 				//Toast.makeText(MainActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+				 Log.i("TTT","准备完毕");
 				arg0.start();
+				isPlay=true;
 			}
 		 });
     }
@@ -488,34 +576,50 @@ public class MainActivity extends Activity {
     }
     void  PlayMusic()
     {
-    	Log.i("TTT","音乐开始");
     	if(mmp!=null)
 		{
 			mmp.start();
 			return;
 		}
-		Log.i("TTT","音乐开始1");
 		musicThread=new Thread(new Runnable(){
 			@Override
 			public void run() {
-				Log.i("TTT","初始化");
+				if(!(app.isNetworkConnected())){
+					//发消息提示说没网放不了歌曲....
+					return;
+				}
 					if(mmp!=null){mmp.release();mmp.reset();}
 					mmp=null;
 					mmp=new MediaPlayer();
 					CloudPlay();
 					//if()可调用本地播放的函数，即播放本地文件....
-				mmp.setOnCompletionListener(new OnCompletionListener(){
-
+					mmp.setOnCompletionListener(new OnCompletionListener(){
 					@Override
 					public void onCompletion(MediaPlayer arg0) {
 						// TODO Auto-generated method stub
+						 Log.i("TTT","播放完毕换下一个");
+							if(!(app.isNetworkConnected()))
+							{
+								//如果网络不通，默认自动换成单曲循环
+								isLoop=true;
+								//更改图标样式不能在这里进行，只好发消息了，唉写地好不优雅
+								Message msg=new Message();
+								msg.what=5;
+								msg.arg1=1;
+								handlerForBackground.sendMessage(msg);
+								
+							}
 						if(isLoop)
 						{
 							mmp.start();
+							//歌词拉回去
+							Message msg=new Message();
+							msg.what=4;
+							handlerForBackground.sendMessage(msg);
 						}
 						else
 						{
-							PlayNextMusic();
+								PlayNextMusic();
 						}
 						
 					}
@@ -555,8 +659,6 @@ public class MainActivity extends Activity {
 		}
 		if(lindex<=0)lindex=0;
 		tempMusicPath=tempCloudMusicPathArry[lindex];
-		Log.i("TTT","已换成"+tempMusicPath);
-		Log.i("TTT","当前索引"+lindex);
 		return tempMusicPath;
 	}
 	
@@ -565,9 +667,8 @@ public class MainActivity extends Activity {
 		@Override
 		public void onPageChanged(View v, int whichHandle) {
 			// TODO Auto-generated method stub
-			//Toast.makeText(MainActivity.this,((TextView)findViewById(R.id.textView1)).getText(), Toast.LENGTH_SHORT).show();
-			//mPushView.reIniti();
 				NoChangeBackground=(whichHandle!=1); //无奈之举
+				current_view_id=whichHandle;
 		}
 	}
 	
@@ -577,9 +678,7 @@ public class MainActivity extends Activity {
 		   if (keyCode == KeyEvent.KEYCODE_BACK) {
                if ((System.currentTimeMillis() - mExitTime) > 2000) {
                        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-                       mExitTime = System.currentTimeMillis();
-
-                       
+                       mExitTime = System.currentTimeMillis();      
                } else {
             	   System.exit(0);
                }
@@ -617,7 +716,10 @@ public class MainActivity extends Activity {
           if(httpResponse.getStatusLine().getStatusCode() == 200)   
           {  
             /*读*/  
-            String strResult = EntityUtils.toString(httpResponse.getEntity());  
+            String strResult = EntityUtils.toString(httpResponse.getEntity());
+            
+            
+            
           }  
           else  
           {  
