@@ -41,44 +41,47 @@ public final class R {
     }
     public static final class drawable {
         public static final int background=0x7f020000;
-        public static final int heart=0x7f020001;
-        public static final int heart_broken=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int loop=0x7f020004;
-        public static final int next=0x7f020005;
-        public static final int noloop=0x7f020006;
-        public static final int pause=0x7f020007;
-        public static final int play=0x7f020008;
-        public static final int shape=0x7f020009;
-        public static final int weathericon=0x7f02000a;
-        public static final int welcome=0x7f02000b;
-        public static final int welcome2=0x7f02000c;
+        public static final int headicon=0x7f020001;
+        public static final int heart=0x7f020002;
+        public static final int heart_broken=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int loop=0x7f020005;
+        public static final int next=0x7f020006;
+        public static final int noloop=0x7f020007;
+        public static final int pause=0x7f020008;
+        public static final int play=0x7f020009;
+        public static final int shape=0x7f02000a;
+        public static final int weathericon=0x7f02000b;
+        public static final int welcome=0x7f02000c;
+        public static final int welcome2=0x7f02000d;
     }
     public static final class id {
         public static final int FrameLayout1=0x7f0a0006;
-        public static final int RelativeLayout1=0x7f0a0013;
-        public static final int action_settings=0x7f0a0017;
-        public static final int background=0x7f0a0014;
+        public static final int RelativeLayout1=0x7f0a0015;
+        public static final int action_settings=0x7f0a0019;
+        public static final int artist=0x7f0a000b;
+        public static final int background=0x7f0a0016;
         public static final int background1=0x7f0a0007;
         public static final int background2=0x7f0a0008;
-        public static final int dislike=0x7f0a000b;
-        public static final int isLoop=0x7f0a000e;
+        public static final int dislike=0x7f0a000c;
+        public static final int imageView1=0x7f0a0013;
+        public static final int isLoop=0x7f0a000f;
         public static final int leftLayout=0x7f0a0000;
         public static final int like=0x7f0a0009;
         public static final int lyric_line_text=0x7f0a0004;
         public static final int lyricshow=0x7f0a0012;
-        public static final int mottoToday=0x7f0a0016;
-        public static final int musicInfo=0x7f0a0010;
-        public static final int musicLrc=0x7f0a0011;
-        public static final int next=0x7f0a000d;
-        public static final int playOrPuse=0x7f0a000c;
+        public static final int mottoToday=0x7f0a0018;
+        public static final int musicInfo=0x7f0a0011;
+        public static final int next=0x7f0a000e;
+        public static final int playOrPuse=0x7f0a000d;
         public static final int push_view=0x7f0a0005;
-        public static final int seekBar1=0x7f0a000f;
+        public static final int seekBar1=0x7f0a0010;
         public static final int textView1=0x7f0a0001;
         public static final int textView2=0x7f0a0002;
         public static final int textView3=0x7f0a0003;
         public static final int title=0x7f0a000a;
-        public static final int weatherIcon=0x7f0a0015;
+        public static final int username=0x7f0a0014;
+        public static final int weatherIcon=0x7f0a0017;
     }
     public static final class layout {
         public static final int left=0x7f030000;
