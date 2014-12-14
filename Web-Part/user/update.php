@@ -24,7 +24,7 @@
 	
 	try{
 		$res=array();
-		if(!(isset($_POST['userid'])){
+		if(!isset($_POST['userid'])){
 			throw new Exception('1');
 		}
 
@@ -70,11 +70,11 @@
 		switch($e->getMessage()){
 			case '1':
 				$res['errcode']=1;
-				$res['errmsg']='username already exist!';
+				$res['errmsg']='incomplete information!';
 				break;
 			case '2':
 				$res['errcode']=2;
-				$res['errmsg']='email already exist!';
+				$res['errmsg']='invalid access!';
 				break;
 			default:
 				$res['errcode']=-1;
