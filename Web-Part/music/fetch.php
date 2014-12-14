@@ -84,8 +84,6 @@
 		}
 
 		$index=rand(0,$count);
-		$array=array('id'=>$mid,'album'=>urlencode($album),'artist'=>$data[$index]['artist'];
-		echo str_replace("\\/", "/",  json_encode($array));
 		$res['errcode']=0;
 		$res['errmsg']='success';
 		$res['music']='http://amergin-music.stor.sinaapp.com/'.$data[$index]['name'].'.mp3';
