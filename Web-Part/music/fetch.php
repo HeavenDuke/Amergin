@@ -38,7 +38,7 @@
 			throw new Exception('1');
 		}
 
-		$user=intval($_POST['user']);
+		$user=intval($_POST['userid']);
 		$weather=intval($_POST['weather']);
 		$mood=intval($_POST['mood']);
 		$behaviour=intval($_POST['behaviour']);
@@ -83,7 +83,7 @@
 			throw new Exception('Database Error!');
 		}
 
-		$index=rand(0,$count);
+		$index=rand(0,$count-1);
 		$res['errcode']=0;
 		$res['errmsg']='success';
 		$res['music']='http://amergin-music.stor.sinaapp.com/'.$data[$index]['name'].'.mp3';
@@ -92,7 +92,7 @@
 		$res['artist']=$data[$index]['artist'];
 		$res['album']=$data[$index]['album'];
 		$res['class']=$data[$index]['class'];
-		echo json_encode($res);
+		echo str_replace("\\/", "/",  json_encode($res));
 	}catch(Exception $e){
 		switch($e->getMessage()){
 			case '1':

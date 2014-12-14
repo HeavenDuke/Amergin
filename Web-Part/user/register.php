@@ -36,6 +36,7 @@
 		$username=$_POST['username'];
 		$password=$_POST['password'];
 		$email=$_POST['email'];
+		$preference=$username.md5($password);
 		if(isset($_POST['sex'])){
 			$sex=intval($_POST['sex']);
 		}
@@ -85,7 +86,7 @@
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
 		$sql='INSERT INTO user(username,password,email,tendency,age,sex) VALUES(?,?,?,?,?,?)';
 		$mysqli_query=$mysqli->prepare($sql);
-		$mysqli_query->bind_param('ssssii',$username,md5($password),$email,$username.md5($password),$age,$sex);
+		$mysqli_query->bind_param('ssssii',$username,md5($password),$email,$preference,$age,$sex);
 		if(!$mysqli_query->execute()){
 			$mysqli->close();
 			throw new Exception('Database Error!');
