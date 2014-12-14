@@ -5,7 +5,6 @@
 	//weather 		-当前天气编码
 	//mood  		-当前心情编码
 	//behaviour 	-当前行为编码
-	//season 		-当前季节编码
 
 	//返回值：
 	//errcode     -错误码
@@ -35,8 +34,7 @@
 	try{
 		$res=array();
 		if(!(isset($_POST['userid'])&&isset($_POST['weather'])
-		   &&isset($_POST['mood'])&&isset($_POST['behaviour'])
-		   &&isset($_POST['season']))){
+		   &&isset($_POST['mood'])&&isset($_POST['behaviour']))){
 			throw new Exception('1');
 		}
 
@@ -44,7 +42,6 @@
 		$weather=intval($_POST['weather']);
 		$mood=intval($_POST['mood']);
 		$behaviour=intval($_POST['behaviour']);
-		$season=intval($_POST['season']);
 		
 		if($user!=-1){
 			$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
