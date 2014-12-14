@@ -28,8 +28,8 @@
 			throw new Exception('1');
 		}
 
-		$user=$_POST['user'];
-		$user=$_POST['password'];
+		$username=$_POST['username'];
+		$password=$_POST['password'];
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
 		$sql='SELECT uid FROM user WHERE username=? AND password=? LIMIT 1';
 		$mysqli_query=$mysqli->prepare($sql);
