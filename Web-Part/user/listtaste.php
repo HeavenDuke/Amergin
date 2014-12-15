@@ -38,6 +38,10 @@
 			throw new Exception('2');
 		}
 
+		if($type!=1&&$type!=0){
+			throw new Exception('4');
+		}
+
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
 		$sql='SELECT uid FROM user WHERE uid=?';
 		$mysqli_query=$mysqli->prepare($sql);
@@ -52,11 +56,12 @@
 			throw new Exception('3');
 		}
 		$mysqli->close();
-
+        
+        
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
-		$sql='SELECT music.name
+		$sql='SELECT music.mid,music.name
 			  FROM preference,music
-			  WHERE perference.mid=music.mid
+			  WHERE preference.mid=music.mid
 			  AND preference.uid=?
 			  AND preference.trend=?';
 		$mysqli_query=$mysqli->prepare($sql);
@@ -65,9 +70,11 @@
 			$mysqli->close();
 			throw new Exception('Database Error!');
 		}
-		$mysqli_query->bind_result($name);
-		while($mysqli_query->fetch())
-			array_push($list, $name);
+		$mysqli_query->bind_result($id,$name);
+		while($mysqli_query->fetch()){
+            $temp['id']=$id;
+        	$temp['name']=$name;
+			array_push($list, $temp);
 		}
 		$mysqli->close();
 
@@ -88,6 +95,10 @@
 			case '3':
 				$res['errcode']=3;
 				$res['errmsg']='invalid access!';
+				break;
+			case '4':
+				$res['errcode']=4;
+				$res['errmsg']='invalid tastecode!';
 				break;
 			default:
 				$res['errcode']=-1;

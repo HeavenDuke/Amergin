@@ -83,12 +83,12 @@
 			if($trend!=$type){
 				throw new Exception('4');
 			}
-			
 		}
 		else{
-				throw new Exception('3');	
+			$mysqli->close();
+			throw new Exception('3');	
 		}
-		$mysqli->close();	
+			
 
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
 		$sql='DELETE FROM preference WHERE mid=? AND uid=? AND TREND=?';
