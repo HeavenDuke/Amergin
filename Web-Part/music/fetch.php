@@ -6,9 +6,10 @@
 	//mood  		-当前心情编码
 	//behaviour 	-当前行为编码
 
-	//返回值：
+	//返回值:
 	//errcode     -错误码
 	//errmsg      -错误信息
+	//mid         -音乐编码
 	//music  	  -音乐地址
 	//name   	  -音乐名
 	//album 	  -专辑名
@@ -62,14 +63,15 @@
 
 		$data=array();
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
-		$sql='select name,artist,album,class from music';
+		$sql='select mid,name,artist,album,class from music';
 		$mysqli_query=$mysqli->prepare($sql);
 		if(!$mysqli_query->execute()){
 			$mysqli->close();
 			throw new Exception('Database Error!');
 		}
-		$mysqli_query->bind_result($name,$artist,$album,$class);
+		$mysqli_query->bind_result($id,$name,$artist,$album,$class);
 		while($mysqli_query->fetch()){
+			$temp['mid']=$id;
 			$temp['name']=urlencode($name);
 			$temp['artist']=urlencode($artist);
 			$temp['album']=urlencode($album);
@@ -88,6 +90,7 @@
 		$res['errmsg']='success';
 		$res['music']='http://amergin-music.stor.sinaapp.com/'.$data[$index]['name'].'.mp3';
 		$res['lyric']='http://amergin-music.stor.sinaapp.com/lyric/'.$data[$index]['name'].'.lrc';
+		$res['mid']=$data[$index]['mid'];
 		$res['name']=$data[$index]['name'];
 		$res['artist']=$data[$index]['artist'];
 		$res['album']=$data[$index]['album'];
