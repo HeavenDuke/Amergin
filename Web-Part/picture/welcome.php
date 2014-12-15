@@ -67,7 +67,7 @@
 		$res['errmsg']='success';
 		$res['content']=$content;
 		$res['background']='http://amergin-picture.stor.sinaapp.com/welcome/'.$date.'.jpg';
-		echo json_encode($res);
+	    echo str_replace("\\/", "/",  json_encode($res));
 	}catch(Exception $e){
 		switch($e->getMessage()){
 			case '1':

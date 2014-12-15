@@ -92,7 +92,7 @@
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
 		$sql='INSERT INTO preference VALUES(?,?,?)';
 		$mysqli_query=$mysqli->prepare($sql);
-		$mysqli_query->bind_param('iii',$music,$user,$type);
+		$mysqli_query->bind_param('iii',$user,$music,$type);
 		if(!$mysqli_query->execute()){
 			$mysqli->close();
 			throw new Exception('Database Error!');

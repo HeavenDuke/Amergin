@@ -68,11 +68,11 @@
 		if($count==0){
 			throw new Exception('2');
 		}
-		$index=rand(0,$count);
+		$index=rand(0,$count-1);
 		$res['errcode']=0;
 		$res['errmsg']='success';
-		$res['background']='http://amergin-picture.stor.sinaapp.com/main/'.$data[$index].'.jpg';
-		echo json_encode($res);
+		$res['background']='http://amergin-picture.stor.sinaapp.com/main/'.urlencode($data[$index]).'.jpg';
+		echo str_replace("\\/", "/",  json_encode($res));
 	}catch(Exception $e){
 		switch($e->getMessage()){
 			case '1':
