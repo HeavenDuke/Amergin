@@ -88,8 +88,8 @@
 		$index=rand(0,$count-1);
 		$res['errcode']=0;
 		$res['errmsg']='success';
-		$res['music']='http://amergin-music.stor.sinaapp.com/'.$data[$index]['name'].'.mp3';
-		$res['lyric']='http://amergin-music.stor.sinaapp.com/lyric/'.$data[$index]['name'].'.lrc';
+		$res['music']='http://7sbqfo.com1.z0.glb.clouddn.com/music/'.$data[$index]['name'].'.mp3';
+		$res['lyric']='http://7sbqfo.com1.z0.glb.clouddn.com/lrc/'.$data[$index]['name'].'.lrc';
 		$res['mid']=$data[$index]['mid'];
 		$res['name']=$data[$index]['name'];
 		$res['artist']=$data[$index]['artist'];

@@ -75,8 +75,8 @@
 		$mysqli->close();
 		$res['errcode']=0;
 		$res['errmsg']='success';
-		$res['music']='http://amergin-music.stor.sinaapp.com/'.$res['name'].'.mp3';
-		$res['lyric']='http://amergin-music.stor.sinaapp.com/lyric/'.$res['name'].'.lrc';
+		$res['music']='http://7sbqfo.com1.z0.glb.clouddn.com/music/'.$res['name'].'.mp3';
+		$res['lyric']='http://7sbqfo.com1.z0.glb.clouddn.com/lrc/'.$res['name'].'.lrc';
 		echo str_replace("\\/", "/",  json_encode($res));
 	}catch(Exception $e){
 		switch($e->getMessage()){
