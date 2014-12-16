@@ -50,9 +50,9 @@
 			  	  pow(ease-?,2)+pow(depression-?,2)+pow(craziness-?,2)+pow(enthusiastism-?,2)+
 			      pow(grief-?,2)+pow(softness-?,2))<=?';
 		$query=$mysqli->prepare($SQL_FETCHQ0);
-		$query->bind_param('iiiiiiiiiiii',$MINPTS,$waiting_list[3],$waiting_list[4],$waiting_list[5],
-						   			      $waiting_list[6],$waiting_list[7],$waiting_list[8],$waiting_list[9],
-						                  $waiting_list[10],$waiting_list[11],$waiting_list[12],$EPS);
+		$query->bind_param('iiiiiiiiiiii',$MINPTS,$waiting_list[$i][3],$waiting_list[$i][4],$waiting_list[$i][5],
+						   			      $waiting_list[$i][6],$waiting_list[$i][7],$waiting_list[$i][8],$waiting_list[$i][9],
+						                  $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],$EPS);
 		$query->execute();
 		$query->bind_result($id,$name,$artist,$album,$speed,$stab,$norm,$happ,$ease,$depre,
 							$crazy,$enthu,$grief,$soft,$neib,$class);
@@ -84,9 +84,9 @@
 			  	 			pow(ease-?,2)+pow(depression-?,2)+pow(craziness-?,2)+pow(enthusiastism-?,2)+
 			      			pow(grief-?,2)+pow(softness-?,2))<=?';
 		$query=$mysqli->prepare($SQL_UPDATE);
-		$query->bind_param('iiiiiiiiiii',$waiting_list[3],$waiting_list[4],$waiting_list[5],
-						   			     $waiting_list[6],$waiting_list[7],$waiting_list[8],$waiting_list[9],
-						                 $waiting_list[10],$waiting_list[11],$waiting_list[12],$EPS);
+		$query->bind_param('iiiiiiiiiii',$waiting_list[$i][3],$waiting_list[$i][4],$waiting_list[$i][5],
+						   			     $waiting_list[$i][6],$waiting_list[$i][7],$waiting_list[$i][8],$waiting_list[$i][9],
+						                 $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],$EPS);
 		$query->execute();
 		$mysqli->close();
 
@@ -97,10 +97,10 @@
 				  		 AND (pow(speed-?,2)+pow(stability-?,2)+pow(normality-?,2)+pow(happiness-?,2)+
 			  	  		 pow(ease-?,2)+pow(depression-?,2)+pow(craziness-?,2)+pow(enthusiastism-?,2)+
 			      		 pow(grief-?,2)+pow(softness-?,2))<=?';
-			$query=$mysqli->prepare($SQL_UPDATE);
-			$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
-											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
-											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+			$query=$mysqli->prepare($SQL_FETCHQ);
+			$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[$j][1],$list_q0[$j][2],$list_q0[$j][3],
+											  $list_q0[$j][4],$list_q0[$j][5],$list_q0[$j][6],$list_q0[$j][7],
+											  $list_q0[$j][8],$list_q0[$j][9],$list_q0[$j][10],$EPS);
 			$query->execute();
 			$query->bind_result($id,$class);
 			while($query->fetch()){
@@ -113,20 +113,86 @@
 		}
 
 		$UPDSEED=array_unique($UPDSEED);
-		echo json_encode($UPDSEED).'<br>';
+
+		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+		$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
+								  depression,craziness,enthusiastism,grief,softness,neibour,class)
+							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
+		$query=$mysqli->prepare($SQL_INSERTP);
+		$query->bind_param('sssiiiiiiiiiii',$waiting_list[$i][1],$waiting_list[$i][2],$waiting_list[$i][3],
+						   			        $waiting_list[$i][4],$waiting_list[$i][5],$waiting_list[$i][6],
+						                    $waiting_list[$i][7],$waiting_list[$i][8],$waiting_list[$i][9],
+						                    $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],
+						                    $waiting_list[$i][13],$waiting_list[$i][14]);
+		$query->execute();
+		$mysqli->close();
+
+		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+		$SQL_GETMIDP='SELECT mid FROM music WHERE name=? AND artist=? AND album=?';
+		$query=$mysqli->prepare($SQL_GETMIDP);
+		$query->bind_param('sss',$waiting_list[$i][1],$waiting_list[$i][2],$waiting_list[$i][3]);
+		$query->execute();
+		$query->bind_result($PID);
+		$query->fetch();
+		$mysqli->close();
 
 		switch(Analysis($UPDSEED)){
 			case 1:
-
+				
 				break;
 			case 2:
-				
+				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+				$SQL_GETCLASS='SELECT max(class) FROM music';
+				$query=$mysqli->prepare($SQL_CREATENEW);
+				$query->execute();
+				$query->bind_result($CLASS_NUMBER);
+				$query->fetch();
+				$mysqli->close();
+
+				$CLASS_NUMBER++;
+
+				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+				$SQL_CREATENEW='UPDATE music SET class=? WHERE mid IN';
+				$SQL_CREATENEW.=ComposeSet($UPDSEED,$PID);
+				$query=$mysqli->prepare($SQL_CREATENEW);
+				$query->bind_param('i',$CLASS_NUMBER);
+				$query->execute();
+				$mysqli->close();
+
+				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
+										 depression,craziness,enthusiastism,grief,softness,neibour,class)
+							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
+				$query=$mysqli->prepare($SQL_INSERTP);
+				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
+											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
+											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+				$query->execute();
+				$mysqli->close();
 				break;
 			case 3:
-				
+				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
+										 depression,craziness,enthusiastism,grief,softness,neibour,class)
+							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
+				$query=$mysqli->prepare($SQL_INSERTP);
+				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
+											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
+											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+				$query->execute();
+				$mysqli->close();
 				break;
 			case 4:
-				
+				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
+										 depression,craziness,enthusiastism,grief,softness,neibour,class)
+							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
+				$query=$mysqli->prepare($SQL_INSERTP);
+				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
+											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
+											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+				$query->execute();
+				$mysqli->close();
 				break;
 		}
 
@@ -151,6 +217,16 @@
 		else{
 			return 3;
 		}
+	}
+
+	function ComposeSet($UPDSEED,$PID){
+		$res='(';
+		$u_cnt=count($UPDSEED);
+		for($i=0;$i<$u_cnt;$i++){
+			$res.=$UPDSEED[$i][0].',';
+		}
+		$res.=$PID.')';
+
 	}
 
     function UpdateMusic($pervious,$new){
