@@ -113,6 +113,44 @@
 		}
 
 		$UPDSEED=array_unique($UPDSEED);
+		echo json_encode($UPDSEED).'<br>';
+
+		switch(Analysis($UPDSEED)){
+			case 1:
+
+				break;
+			case 2:
+				
+				break;
+			case 3:
+				
+				break;
+			case 4:
+				
+				break;
+		}
+
+	}
+
+	function Analysis($UPDSEED){
+		$cnt=count($UPDSEED);
+		if($cnt==0){
+			return 1;
+		}
+		$clusters=array();
+		for($i=0;$i<$cnt;$i++){
+			array_push($clusters, $UPDSEED[$i][1]);
+		}
+		$clusters=array_unique($clusters);
+		if(count($clusters)>1){
+			return 4;
+		}
+		else if($clusters[0]==0){
+			return 2;
+		}
+		else{
+			return 3;
+		}
 	}
 
     function UpdateMusic($pervious,$new){
