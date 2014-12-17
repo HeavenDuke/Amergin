@@ -115,6 +115,20 @@
 		$UPDSEED=array_unique($UPDSEED);
 
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+		$SQL_FETCHQPN='SELECT count(*) FROM music
+			  		  WHERE (pow(speed-?,2)+pow(stability-?,2)+pow(normality-?,2)+pow(happiness-?,2)+
+			  	  			 pow(ease-?,2)+pow(depression-?,2)+pow(craziness-?,2)+pow(enthusiastism-?,2)+
+			      			 pow(grief-?,2)+pow(softness-?,2))<=?';
+		$query=$mysqli->prepare($SQL_FETCHPN);
+		$query->bind_param('iiiiiiiiiii',$waiting_list[$i][3],$waiting_list[$i][4],$waiting_list[$i][5],
+						   			     $waiting_list[$i][6],$waiting_list[$i][7],$waiting_list[$i][8],$waiting_list[$i][9],
+						                 $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],$EPS);
+		$query->execute();
+		$query->bind_result($count_neibour);
+		$query->fetch());
+		$mysqli->close();
+
+		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
 		$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
 								  depression,craziness,enthusiastism,grief,softness,neibour,class)
 							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
@@ -123,7 +137,7 @@
 						   			        $waiting_list[$i][4],$waiting_list[$i][5],$waiting_list[$i][6],
 						                    $waiting_list[$i][7],$waiting_list[$i][8],$waiting_list[$i][9],
 						                    $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],
-						                    $waiting_list[$i][13],$waiting_list[$i][14]);
+						                    $waiting_list[$i][13],$count_neibour);
 		$query->execute();
 		$mysqli->close();
 
@@ -136,66 +150,82 @@
 		$query->fetch();
 		$mysqli->close();
 
+		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
+		$SQL_GETCLASS='SELECT max(class) FROM music';
+		$query=$mysqli->prepare($SQL_CREATENEW);
+		$query->execute();
+		$query->bind_result($CLASS_NUMBER);
+		$query->fetch();
+		$mysqli->close();
+		$CLASS_NUMBER++;
+
+
 		switch(Analysis($UPDSEED)){
 			case 1:
-				
 				break;
 			case 2:
-				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
-				$SQL_GETCLASS='SELECT max(class) FROM music';
-				$query=$mysqli->prepare($SQL_CREATENEW);
-				$query->execute();
-				$query->bind_result($CLASS_NUMBER);
-				$query->fetch();
-				$mysqli->close();
-
-				$CLASS_NUMBER++;
-
+				
 				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
 				$SQL_CREATENEW='UPDATE music SET class=? WHERE mid IN';
-				$SQL_CREATENEW.=ComposeSet($UPDSEED,$PID);
+				$SQL_CREATENEW.=ComposeNewSet($UPDSEED,$PID);
 				$query=$mysqli->prepare($SQL_CREATENEW);
 				$query->bind_param('i',$CLASS_NUMBER);
-				$query->execute();
-				$mysqli->close();
-
-				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
-				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
-										 depression,craziness,enthusiastism,grief,softness,neibour,class)
-							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
-				$query=$mysqli->prepare($SQL_INSERTP);
-				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
-											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
-											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
 				$query->execute();
 				$mysqli->close();
 				break;
 			case 3:
 				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
-				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
-										 depression,craziness,enthusiastism,grief,softness,neibour,class)
-							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
-				$query=$mysqli->prepare($SQL_INSERTP);
-				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
-											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
-											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+				$SQL_ABSORPTION='UPDATE music SET class='.GetClass($UPDSEED).' WHERE mid IN';
+				$SQL_ABSORPTION.=ComposeAbsoptionSet($UPDSEED,$PID);
+				$query=$mysqli->prepare($SQL_ABSORPTION);
 				$query->execute();
 				$mysqli->close();
 				break;
 			case 4:
 				$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
-				$SQL_INSERTP='INSERT INTO music(name,artist,album,speed,stability,normality,happiness,ease,
-										 depression,craziness,enthusiastism,grief,softness,neibour,class)
-							 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,0)';
-				$query=$mysqli->prepare($SQL_INSERTP);
-				$query->bind_param('iiiiiiiiiiii',$MINPTS,$list_q0[1],$list_q0[2],$list_q0[3],
-											  $list_q0[4],$list_q0[5],$list_q0[6],$list_q0[7],
-											  $list_q0[8],$list_q0[9],$list_q0[10],$EPS);
+				$SQL_MERGE='UPDATE music SET class='.$CLASS_NUMBER.' WHERE mid IN';
+				$SQL_MERGE.=ComposeMergeSet($UPDSEED,$PID);
+				$query=$mysqli->prepare($SQL_ABSORPTION);
 				$query->execute();
 				$mysqli->close();
 				break;
 		}
+	}
 
+	function GetClass($UPDSEED){
+		$clusters=array();
+		for($i=0;$i<$cnt;$i++){
+			array_push($clusters, $UPDSEED[$i][1]);
+		}
+		$clusters=array_unique($clusters);
+		if($clusters[0]==0){
+			return $clusters[1];
+		}
+		else{
+			return $clusters[0];
+		}
+	}
+
+	function ComposeAbsoptionSet($UPDSEED,$PID){
+		$res='(';
+		$cnt=count($UPDSEED);
+		for($i=0;$i<$cnt;$i++){
+			if($UPDSEED[$i][1]==0){
+				$res.=$UPDSEED[$i][0].',';
+			}
+		}
+		$res.=$PID.')';
+		return $res;
+	}
+
+	function ComposeMergeSet($UPDSEED,$PID){
+		$res='(';
+		$u_cnt=count($UPDSEED);
+		for($i=0;$i<$u_cnt;$i++){
+			$res.=$UPDSEED[$i][0].',';
+		}
+		$res.=$PID.')';
+		return $res;
 	}
 
 	function Analysis($UPDSEED){
@@ -208,25 +238,30 @@
 			array_push($clusters, $UPDSEED[$i][1]);
 		}
 		$clusters=array_unique($clusters);
-		if(count($clusters)>1){
-			return 4;
-		}
-		else if($clusters[0]==0){
+		if(count($clusters)==1){
 			return 2;
 		}
-		else{
-			return 3;
+		else if(count($clusters)==2)
+			if($clusters[0]==0||$clusters[1]==0){
+				return 3;
+			}
+			else{
+				return 4;
+			}
+		}
+		else if{
+			return 4;
 		}
 	}
 
-	function ComposeSet($UPDSEED,$PID){
+	function ComposeNewSet($UPDSEED,$PID){
 		$res='(';
 		$u_cnt=count($UPDSEED);
 		for($i=0;$i<$u_cnt;$i++){
 			$res.=$UPDSEED[$i][0].',';
 		}
 		$res.=$PID.')';
-
+		return $res;
 	}
 
     function UpdateMusic($pervious,$new){
