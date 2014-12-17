@@ -13,7 +13,7 @@
 	$sql_database='test';
 
 	$MINPTS=10;
-	$EPS=8000;
+	$EPS=15000;
 	// $Music_Name=$_POST['Name'];
 	// $Music_Album=$_POST['Album'];
 	// $Music_Artist=$_POST['Artist'];
@@ -31,7 +31,7 @@
 	$Music_Neibour=0;
 	$SEED=array();
 
-	$file=fopen('./music.csv','r');
+	$file=fopen('./musicdata.csv','r');
 	fgetcsv($file);
 	$waiting_list=array();
 	while(!feof($file)){
@@ -39,7 +39,7 @@
 		for($i=4;$i<count($temp);$i++){
 			$temp[$i]=intval($temp[$i]);
 		}
-		array_push($waiting_list,fgetcsv($file));
+		array_push($waiting_list,$temp);
 	}
 
 	$w_num=count($waiting_list);
@@ -115,7 +115,7 @@
 		$UPDSEED=array_unique($UPDSEED);
 
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
-		$SQL_FETCHQPN='SELECT count(*) FROM music
+		$SQL_FETCHPN='SELECT count(*) FROM music
 			  		  WHERE (pow(speed-?,2)+pow(stability-?,2)+pow(normality-?,2)+pow(happiness-?,2)+
 			  	  			 pow(ease-?,2)+pow(depression-?,2)+pow(craziness-?,2)+pow(enthusiastism-?,2)+
 			      			 pow(grief-?,2)+pow(softness-?,2))<=?';
@@ -125,7 +125,7 @@
 						                 $waiting_list[$i][10],$waiting_list[$i][11],$waiting_list[$i][12],$EPS);
 		$query->execute();
 		$query->bind_result($count_neibour);
-		$query->fetch());
+		$query->fetch();
 		$mysqli->close();
 
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
@@ -152,7 +152,7 @@
 
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database);
 		$SQL_GETCLASS='SELECT max(class) FROM music';
-		$query=$mysqli->prepare($SQL_CREATENEW);
+		$query=$mysqli->prepare($SQL_GETCLASS);
 		$query->execute();
 		$query->bind_result($CLASS_NUMBER);
 		$query->fetch();
@@ -243,7 +243,7 @@
 		if(count($clusters)==1){
 			return 2;
 		}
-		else if(count($clusters)==2)
+		else if(count($clusters)==2){
 			if($clusters[0]==0||$clusters[1]==0){
 				return 3;
 			}
@@ -251,7 +251,7 @@
 				return 4;
 			}
 		}
-		else if{
+		else{
 			return 4;
 		}
 	}
