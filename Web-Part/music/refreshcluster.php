@@ -188,6 +188,8 @@
 				$query=$mysqli->prepare($SQL_ABSORPTION);
 				$query->execute();
 				$mysqli->close();
+				UpdateMusic($UPDSEED,$CLASS_NUMBER);
+				UpdateUser($UPDSEED);
 				break;
 		}
 	}
