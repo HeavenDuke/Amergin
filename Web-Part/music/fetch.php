@@ -70,6 +70,9 @@
 		$period=ParseTime();
 
 		// echo $age.'<br>';
+		// echo $season.'<br>';
+		// echo $period.'<br>';
+		// echo $age.'<br>';
 		// echo $sex.'<br>';
 		// echo $weather.'<br>';
 		// echo $mood.'<br>';
@@ -129,11 +132,11 @@
 		echo json_encode($res);
 	}
 
-	function ParseTime($time){
+	function ParseTime(){
 		$res=0;
-		$hour=date('h',time());
-		$minute=date('i',time());
-		$second=date('s',time());
+		$hour=intval(date('H',time()));
+		$minute=intval(date('i',time()));
+		$second=intval(date('s',time()));
 		if(Time2Number($hour,$minute,$second)<Time2Number(6,30,0)){
 			$res=7;
 		}
@@ -169,17 +172,17 @@
 		return $res;
 	}
 
-	function ParseDate($time){
+	function ParseDate(){
 		$res=0;
 		$month=date('m',time());
 		$month=intval($month);
 		if($month==3||$month==4||$month==5){
 			$res=1;
 		}
-		else if($month==3||$month==4||$month==5){
+		else if($month==6||$month==7||$month==8){
 			$res=2;
 		}
-		else if($month==3||$month==4||$month==5){
+		else if($month==9||$month==10||$month==11){
 			$res=3;
 		}
 		else{
@@ -196,13 +199,13 @@
 		else if($age<=14){
 			$res=2;
 		}
-		else if($age<=15){
+		else if($age<=25){
 			$res=3;
 		}
-		else if($age<=25){
+		else if($age<=40){
 			$res=4;
 		}
-		else if($age<=40){
+		else if($age<=60){
 			$res=5;
 		}
 		else{
