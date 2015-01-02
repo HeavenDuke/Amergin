@@ -43,26 +43,41 @@
 		$weather=intval($_POST['weather']);
 		$mood=intval($_POST['mood']);
 		$behaviour=intval($_POST['behaviour']);
-		
+
 		if($user!=-1){
 			$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
-			$sql='select uid from user where uid=?';
+			$sql='select uid,sex,age from user where uid=?';
 			$mysqli_query=$mysqli->prepare($sql);
 			$mysqli_query->bind_param('i',$user);
 			if(!$mysqli_query->execute()){
 				$mysqli->close();
 				throw new Exception('Database Error!');
 			}
-			$mysqli_query->bind_result($user);
+			$mysqli_query->bind_result($user,$sex,$age);
 			if(!$mysqli_query->fetch()){
 				$mysqli->close();
 				throw new Exception('2');
 			}
 			$mysqli->close();
 		}
+		else{
+			$sex=1;
+			$age=30;
+		}
+
+		$age=ParseAge($age);
+		$season=ParseDate();
+		$period=ParseTime();
+
+		// echo $age.'<br>';
+		// echo $sex.'<br>';
+		// echo $weather.'<br>';
+		// echo $mood.'<br>';
+		// echo $behaviour.'<br>';
 
 		$data=array();
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
+		//$sql='SELECT mid,name,artist,album,class from music where';
 		$sql='select mid,name,artist,album,class from music';
 		$mysqli_query=$mysqli->prepare($sql);
 		if(!$mysqli_query->execute()){
@@ -88,8 +103,8 @@
 		$index=rand(0,$count-1);
 		$res['errcode']=0;
 		$res['errmsg']='success';
-		$res['music']='http://7sbqfo.com1.z0.glb.clouddn.com/music/'.$data[$index]['name'].'.mp3';
-		$res['lyric']='http://7sbqfo.com1.z0.glb.clouddn.com/lrc/'.$data[$index]['name'].'.lrc';
+		$res['music']='http://amergin-music.stor.sinaapp.com/'.$data[$index]['name'].'.mp3';
+		$res['lyric']='http://amergin-music.stor.sinaapp.com/lyric/'.$data[$index]['name'].'.lrc';
 		$res['mid']=$data[$index]['mid'];
 		$res['name']=$data[$index]['name'];
 		$res['artist']=$data[$index]['artist'];
@@ -112,5 +127,87 @@
 				break;
 		}
 		echo json_encode($res);
+	}
+
+	function ParseTime($time){
+		$res=0;
+		$hour=date('h',time());
+		$minute=date('i',time());
+		$second=date('s',time());
+		if(Time2Number($hour,$minute,$second)<Time2Number(6,30,0)){
+			$res=7;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(8,0,0)){
+			$res=1;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(11,30,0)){
+			$res=2;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(13,30,0)){
+			$res=3;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(16,30,0)){
+			$res=4;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(18,0,0)){
+			$res=5;
+		}
+		else if(Time2Number($hour,$minute,$second)<Time2Number(21,00,0)){
+			$res=6;
+		}
+		else{
+			$res=7;
+		}
+		return $res;
+	}
+
+	function Time2Number($hour,$minute,$second){
+		$res=0;
+		$res+=$hour*3600;
+		$res+=$minute*60;
+		$res+=$second;
+		return $res;
+	}
+
+	function ParseDate($time){
+		$res=0;
+		$month=date('m',time());
+		$month=intval($month);
+		if($month==3||$month==4||$month==5){
+			$res=1;
+		}
+		else if($month==3||$month==4||$month==5){
+			$res=2;
+		}
+		else if($month==3||$month==4||$month==5){
+			$res=3;
+		}
+		else{
+			$res=4;
+		}
+		return $res;
+	}
+
+	function ParseAge($age){
+		$res=0;
+		if($age<=6){
+			$res=1;
+		}
+		else if($age<=14){
+			$res=2;
+		}
+		else if($age<=15){
+			$res=3;
+		}
+		else if($age<=25){
+			$res=4;
+		}
+		else if($age<=40){
+			$res=5;
+		}
+		else{
+			$res=6;
+		}
+		return $res;
 	}
 ?>
