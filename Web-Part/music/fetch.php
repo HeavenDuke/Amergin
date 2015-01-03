@@ -88,7 +88,7 @@
         	$sql.=$value.',';
         }
         $sql[strlen($sql)-1]=')';
-		echo $sql;
+		// echo $sql;
 		$mysqli_query=$mysqli->prepare($sql);
 		if(!$mysqli_query->execute()){
 			$mysqli->close();
