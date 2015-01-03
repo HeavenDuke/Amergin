@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<general_tree>
+	<mood tvalue='1'>
+		<music tvalue='1'/>
+	</mood>
+	<mood tvalue='2'>
+		<music tvalue='1'/>
+		<music tvalue='2'/>
+		<music tvalue='3'/>
+		<music tvalue='5'/>
+	</mood>
+	<mood tvalue='3'>
+		<music tvalue='3'/>
+	</mood>
+	<mood tvalue='4'>
+		<music tvalue='2'/>
+	</mood>
+	<mood tvalue='5'>
+		<music tvalue='2'/>
+	</mood>
+	<mood tvalue='6'>
+		<music tvalue='2'/>
+		<music tvalue='3'/>
+	</mood>
+	<mood tvalue='7'>
+		<behaviour tvalue='1'>
+			<music tvalue='2'/>
+		</behaviour>
+		<behaviour tvalue='2'>
+			<music tvalue='4'/>
+			<music tvalue='5'/>
+		</behaviour>
+		<behaviour tvalue='3'>
+			<music tvalue='2'/>
+		</behaviour>
+		<behaviour tvalue='4'>
+			<music tvalue='2'/>
+			<music tvalue='3'/>
+		</behaviour>
+		<behaviour tvalue='5'>
+			<music tvalue='1'/>
+			<music tvalue='5'/>
+		</behaviour>
+		<behaviour tvalue='6'>
+			<music tvalue='2'/>
+		</behaviour>
+		<behaviour tvalue='7'>
+			<music tvalue='5'/>
+		</behaviour>
+	</mood>
+</general_tree>

@@ -69,6 +69,9 @@
 		$season=ParseDate();
 		$period=ParseTime();
 
+		$classes=GetClasses($mood,$behaviour);
+		// echo json_encode($classes);
+
 		// echo $age.'<br>';
 		// echo $season.'<br>';
 		// echo $period.'<br>';
@@ -80,8 +83,12 @@
 
 		$data=array();
 		$mysqli=new mysqli($sql_server,$sql_username,$sql_password,$sql_database,$sql_port);
-		//$sql='SELECT mid,name,artist,album,class from music where';
-		$sql='select mid,name,artist,album,class from music';
+		$sql='SELECT mid,name,artist,album,class FROM music where class IN(';
+        foreach($classes as $key => $value){
+        	$sql.=$value.',';
+        }
+        $sql[strlen($sql)-1]=')';
+		echo $sql;
 		$mysqli_query=$mysqli->prepare($sql);
 		if(!$mysqli_query->execute()){
 			$mysqli->close();
@@ -212,5 +219,28 @@
 			$res=6;
 		}
 		return $res;
+	}
+
+	function GetClasses($mood,$behaviour){
+		$res=array();
+		$xml=simplexml_load_file('../General.xml');
+		$moods=$xml->children();
+		$behaviours=$moods[$mood-1]->children();
+		if($behaviours->getName()=='music'){
+			$count=count($behaviours);
+			for($i=0;$i<$count;$i++){
+                $node=$behaviours[$i]->attributes();
+				array_push($res, $node['tvalue']);
+			}
+		}
+		else{
+			$music=$behaviours[$behaviour-1]->children();
+			$count=count($music);
+			for($i=0;$i<$count;$i++){
+				$node=$music[$i]->attributes();
+				array_push($res, $node['tvalue']);
+			}
+		}
+        return $res;
 	}
 ?>
