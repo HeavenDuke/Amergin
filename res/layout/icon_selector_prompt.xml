@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:background="@drawable/bubble2"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_horizontal"
+    android:paddingTop="13dip"
+    android:paddingBottom="1dip"
+ >
+ 
+            <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/Albums_select"
+            bootstrap:bb_roundedCorners="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+			bootstrap:bb_type="success"
+			bootstrap:bb_icon_left="fa-file-photo-o"
+            android:text="相册"
+            />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/Camera_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			bootstrap:bb_type="success"
+			bootstrap:bb_icon_left="fa-camera"
+			android:text="相机" 
+            />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/Reset_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            bootstrap:bb_roundedCorners="true"
+            bootstrap:bb_icon_left="fa-mail-reply"
+			bootstrap:bb_type="success"
+			android:text="重置" 
+            />
+
+</LinearLayout>

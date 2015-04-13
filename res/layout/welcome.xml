@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+     >
+       <ImageView
+        android:id="@+id/background"
+        android:src="@drawable/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         android:scaleType="fitXY" >
+		</ImageView>
+
+    <TextView
+        android:id="@+id/mottoToday"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:textColor="#000"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="86dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="8dp"
+        android:textSize="25sp" />
+
+    <ImageView
+        android:id="@+id/weatherIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="35dp"
+        android:scaleX="3"
+        android:scaleY="3"
+        android:scaleType="matrix"></ImageView>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/mottoToday"
+        android:layout_below="@+id/weatherIcon"
+        android:layout_marginLeft="80dp"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:text="Amergin" />
+"
+
+</RelativeLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:id="@+id/right_panel"
+    android:layout_height="fill_parent"
+    android:alpha="122"
+    android:weightSum="7"
+    android:background="@drawable/right_bkg"
+    android:orientation="vertical" >
+<LinearLayout
+    android:layout_width="match_parent"  
+    android:layout_height="0dp"  
+    android:gravity="center_horizontal"
+    android:layout_weight="1"
+    android:weightSum="49"
+    android:paddingTop="12dp"
+     >  
+  
+  <com.beardedhen.androidbootstrap.BootstrapButton 
+         android:id="@+id/like_list_btn"
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        bootstrap:bb_icon_left="fa-heart-o"
+        bootstrap:bb_roundedCorners="true"
+        android:layout_weight="23"  
+        bootstrap:bb_type="info"
+        android:text="喜欢   " />
+  <TextView
+      android:visibility="invisible"
+      android:layout_weight="1" 
+      android:layout_width="0dp" 
+      android:layout_height="wrap_content"  
+      />
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/dislike_list_btn" 
+        bootstrap:bb_icon_left="fa-trash-o"
+        bootstrap:bb_roundedCorners="true"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"  
+        android:layout_weight="23"
+        bootstrap:bb_type="default"
+        android:text="不喜欢" />  
+  
+</LinearLayout>  
+
+ 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_weight="6" 
+        android:layout_height="0dp" >
+
+        <ListView
+            android:id="@+id/like_panel"
+            android:layout_width="match_parent"
+            android:background="#55ffffff"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+        </ListView>
+
+        <ListView
+            android:id="@+id/dislike_panel"
+            android:background="#55ffffff"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+        </ListView>
+
+    </FrameLayout>
+	
+</LinearLayout>
